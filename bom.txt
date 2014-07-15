@@ -1,0 +1,4 @@
+Bill of materials
+-------------------------------------
+#	Amount	Name		Desciption				Package		Datasheet
+1	1	SS411P		Hall switch				TO-92		http://www.voti.nl/docs/SS411P.pdf

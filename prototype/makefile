@@ -6,8 +6,8 @@ SOURCES := $(wildcard *.c) $(wildcard */*.c)
 HEADERS := $(wildcard *.h) $(wildcard */*.h)
 OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
 
-MCU := atmega32
-MCU_AVRDUDE := m32
+MCU := atmega328p
+MCU_AVRDUDE := m328p
 MCU_FREQ := 16000000UL
 
 CC := avr-gcc
