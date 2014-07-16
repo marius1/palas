@@ -10,15 +10,16 @@
 
 #include "uart/uart.h"
 
-volatile uint16_t count = 0;
-volatile uint16_t rpm = 0;
+volatile uint16_t pulse = 0;
 
 int main(void)
 {
+	uint16_t rpm = 0;
+
 	uart_init();
-	DDRD &= ~(1 << DDD2);
-	EICRA |= (1 << ISC01);  // The falling edge of INT0 generates an interrupt request.
-	EIMSK |= (1 << INT0);	// Turn on INT0
+	
+	TCCR1B |= (1 << CS12) | (1 << CS10);	// prescaler 1024
+	TIMSK1 |= (1 << ICIE1);
 	
 	sei();
 	
@@ -26,12 +27,26 @@ int main(void)
 	
 	while(1)
 	{
-		
+		if (pulse > 0)
+		{
+			rpm = 937500L / pulse;
+			uart_putw_dec(pulse);
+			uart_putc(',');
+			uart_putw_dec(rpm);
+			uart_putc('\n');
+			pulse = 0;
+		}
 	}
 	return 0;
 }
 
-ISR(INT0_vect)
+ISR(TIMER1_CAPT_vect)
 {
-	uart_putc('.');
+	static uint16_t start;
+	uint16_t t = ICR1;
+	if ( t > start)
+		pulse = t - start;
+	else
+		pulse = (0xFFFF ^ start) + t;
+	start = t;
 }
