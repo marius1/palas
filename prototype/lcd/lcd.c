@@ -3,6 +3,7 @@
 
 #include "lcd.h"
 #include "ascii.h"
+#include "large_numbers.h"
 
 void lcd_init()
 {
@@ -37,6 +38,16 @@ void lcd_write(uint8_t data, uint8_t mode)
 	LCD_PORT |= (1 << LCD_CE );
 }
 
+void lcd_set_contrast(uint8_t contrast)
+{
+	if (contrast > 0x7F)
+		contrast = 0x7F;
+
+	lcd_write( 0x21, LCD_CMD);
+	lcd_write( 0x80 | contrast, LCD_CMD);
+	lcd_write( 0x20, LCD_CMD);
+}
+
 void lcd_clear()
 {
 	for (int i = 0 ; i < (LCD_X * LCD_Y / 8) ; i++)
@@ -49,10 +60,24 @@ void lcd_write_char(uint8_t d)
 {
 	lcd_write(0x00, LCD_DATA);
 	
-	for (int i = 0 ; i < 5 ; i++)
-		lcd_write(ASCII[d - 0x20][i], LCD_DATA);
+	for (int i = 0; i < 5; i++)
+		lcd_write(ASCII[d - NUMBER_OFFSET][i], LCD_DATA);
 	
 	lcd_write(0x00, LCD_DATA);
+}
+
+void lcd_write_large_number(uint8_t number, uint8_t x, uint8_t y)
+{
+	uint8_t i;
+	for (i = 0; i < 57; i++)
+	{
+		if (i%19 == 0) 
+		{
+			lcd_write(0x40 | (y+(i/19)), LCD_CMD);
+			lcd_write(0x80 | x, LCD_CMD);
+		}
+		lcd_write(large_numbers[number][i], LCD_DATA);		
+	}	
 }
 
 void lcd_print_dubble_number(uint8_t number)

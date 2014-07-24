@@ -14,13 +14,15 @@
 #define LCD_X     84
 #define LCD_Y     48
 
-#define NUMBER_OFFSET 0x30
+#define NUMBER_OFFSET 0x0
 
 void lcd_init();
 void lcd_write(uint8_t data, uint8_t mode);
+void lcd_set_contrast(uint8_t contrast);
 void lcd_clear();
 void lcd_goto_xy(uint8_t x, uint8_t y);
 void lcd_write_char(uint8_t d);
+void lcd_write_large_number(uint8_t number, uint8_t x, uint8_t y);
 void lcd_print_dubble_number(uint8_t number);
 
 #endif
