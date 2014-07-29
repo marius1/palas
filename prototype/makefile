@@ -26,6 +26,9 @@ clean:
 flash: $(HEX)
 	avrdude -c usbtiny -p $(MCU_AVRDUDE) -U flash:w:$(HEX)
 
+fuses:
+	 avrdude -c usbtiny -p $(MCU_AVRDUDE) -U lfuse:w:0x8e:m -U hfuse:w:0xde:m
+
 $(HEX): $(OUT)
 	$(OBJCOPY) -R .eeprom -O ihex $< $@
 

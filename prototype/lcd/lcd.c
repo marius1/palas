@@ -4,10 +4,14 @@
 #include "lcd.h"
 #include "ascii.h"
 #include "large_numbers.h"
+#include "battery.h"
 
 void lcd_init()
 {
-	LCD_DDR |= (1 << PB1) | (1 << PB2) | (1 << PB3) | (1 << PB5);
+	LCD_DDR |= (1 << LCD_DC) | (1 << LCD_CE) | (1 << LCD_MOSI) | (1 << LCD_SCK);	
+	LCD_DDR2 |= (1 << LCD_RST) | (1 << LCD_BL);
+	
+	LCD_DDR2   &= ~(1 << LCD_RST);
 	
 	SPCR |= (1 << SPE) | (1 << MSTR);
 	SPSR |= (1 << SPI2X);
@@ -79,6 +83,22 @@ void lcd_write_large_number(uint8_t number, uint8_t x, uint8_t y)
 		lcd_write(large_numbers[number][i], LCD_DATA);		
 	}	
 }
+void lcd_print_battery(uint16_t value)
+{
+	uint8_t i,j,k = 2;
+	
+	lcd_goto_xy(0, 5);
+	for(i = 0; i < 16; i++)
+		lcd_write(battery_house[i], LCD_DATA);
+	
+	for(j = 0; j < value / 240; j++)
+	{
+		lcd_goto_xy(k, 5);
+		lcd_write(0xBD, LCD_DATA);
+		lcd_write(0xBD, LCD_DATA);
+		k += 3;
+	}
+}
 
 void lcd_print_dubble_number(uint8_t number)
 {
@@ -94,4 +114,12 @@ void lcd_goto_xy(uint8_t x, uint8_t y)
 {
 	lcd_write(0x80 | x, LCD_CMD);
 	lcd_write(0x40 | y, LCD_CMD);
+}
+
+void lcd_set_backlight(uint8_t value)
+{
+	if (value == 1)
+		LCD_PORT2   |=  (1 << LCD_BL);
+	else
+		LCD_PORT2   &= ~(1 << LCD_BL); 
 }

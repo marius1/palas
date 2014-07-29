@@ -11,6 +11,11 @@
 #define LCD_MOSI	PB3
 #define LCD_SCK		PB5
 
+#define LCD_DDR2 	DDRC
+#define LCD_PORT2 	PORTC
+#define LCD_RST		PC1
+#define LCD_BL		PC2
+
 #define LCD_X     84
 #define LCD_Y     48
 
@@ -24,5 +29,7 @@ void lcd_goto_xy(uint8_t x, uint8_t y);
 void lcd_write_char(uint8_t d);
 void lcd_write_large_number(uint8_t number, uint8_t x, uint8_t y);
 void lcd_print_dubble_number(uint8_t number);
+void lcd_print_battery(uint16_t value);
+void lcd_set_backlight(uint8_t value);
 
 #endif
