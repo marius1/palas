@@ -262,31 +262,36 @@ void print_rpm()
 	if (pulse > 0)
 	{
 		rpm = 468720 / pulse;
+		rpm = (rpm > 999) ? 999 : rpm;
 	}
 	else
+	{
 		rpm = 0;
+	}
 	
 	if ( rpm != prevRpm )
 	{
 		s = rpm % 10;
 		t = ((rpm % 100) - s) / 10;
 		h = (rpm - t - s) / 100;
-
-		if ( t > 0 )
-			offset = 20;
-		
-		if ( h > 0 )
-			offset = 10;
 		
 		clear_rpm_area();
 		
 		if (h > 0)
-			lcd_write_large_number(h, 0 + offset, 2);
-		
-		if (t > 0 || ( t == 0 && h > 0))
-			lcd_write_large_number(t, 21 + offset, 2);
-			
-		lcd_write_large_number(s, 42 + offset, 2);
+		{
+			lcd_write_large_number(h, 10, 2);
+			lcd_write_large_number(t, 31, 2);
+			lcd_write_large_number(s, 52, 2);
+		}
+		else if (t > 0 || ( t == 0 && h > 0))
+		{
+			lcd_write_large_number(t, 20, 2);
+			lcd_write_large_number(s, 41, 2);
+		}
+		else
+		{			
+			lcd_write_large_number(s, 30, 2);
+		}
 		
 		prevRpm = rpm;
 		uart_putw_dec(rpm);
