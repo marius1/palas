@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <avr/io.h>
+#include <util/delay.h>
+#include <avr/pgmspace.h>
 
 #include "lcd.h"
 #include "ascii.h"
@@ -10,8 +12,10 @@ void lcd_init()
 {
 	LCD_DDR |= (1 << LCD_DC) | (1 << LCD_CE) | (1 << LCD_MOSI) | (1 << LCD_SCK);	
 	LCD_DDR2 |= (1 << LCD_RST) | (1 << LCD_BL);
-	
-	LCD_DDR2   &= ~(1 << LCD_RST);
+		
+	LCD_DDR2 |=  (1 << LCD_RST);
+	LCD_DDR2 &= ~(1 << LCD_RST);
+	_delay_us(1);
 	
 	SPCR |= (1 << SPE) | (1 << MSTR);
 	SPSR |= (1 << SPI2X);
@@ -54,7 +58,7 @@ void lcd_set_contrast(uint8_t contrast)
 
 void lcd_clear()
 {
-	for (int i = 0 ; i < (LCD_X * LCD_Y / 8) ; i++)
+	for (int i = 0 ; i < (LCD_X * LCD_Y / 8); i++)
 		lcd_write(0x00, LCD_DATA);
 		
 	lcd_goto_xy(0, 0);
@@ -65,9 +69,27 @@ void lcd_write_char(uint8_t d)
 	lcd_write(0x00, LCD_DATA);
 	
 	for (int i = 0; i < 5; i++)
-		lcd_write(ASCII[d - NUMBER_OFFSET][i], LCD_DATA);
+		lcd_write(ASCII[d - ASCII_OFFSET][i], LCD_DATA);
 	
 	lcd_write(0x00, LCD_DATA);
+}
+
+void lcd_write_string(char *str) 
+{
+  while (*str)
+    lcd_write_char(*str++);
+}
+
+void lcd_write_string_p(PGM_P str) 
+{
+	while(1)
+    {
+        uint8_t b = pgm_read_byte_near(str++);
+        if(!b)
+            break;
+
+        lcd_write_char(b);
+    }
 }
 
 void lcd_write_large_number(uint8_t number, uint8_t x, uint8_t y)
@@ -83,6 +105,8 @@ void lcd_write_large_number(uint8_t number, uint8_t x, uint8_t y)
 		lcd_write(large_numbers[number][i], LCD_DATA);		
 	}	
 }
+
+// TODO, should be WAY smarter calculation
 void lcd_print_battery(uint16_t value)
 {
 	uint8_t i,j,k = 2;
@@ -116,10 +140,20 @@ void lcd_goto_xy(uint8_t x, uint8_t y)
 	lcd_write(0x40 | y, LCD_CMD);
 }
 
+uint8_t lcd_get_backlight()
+{
+	return (LCD_PORT2 & (1 << LCD_BL)) > 0;
+}
+
 void lcd_set_backlight(uint8_t value)
 {
 	if (value == 1)
 		LCD_PORT2   |=  (1 << LCD_BL);
 	else
 		LCD_PORT2   &= ~(1 << LCD_BL); 
+}
+
+void lcd_toggle_backlight()
+{
+	LCD_PORT2 ^= (1 << LCD_BL);
 }

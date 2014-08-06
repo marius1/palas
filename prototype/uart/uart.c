@@ -58,7 +58,7 @@
 #endif
 #endif
 
-#define BAUD 4800UL
+#define BAUD 9600UL
 #define UBRRVAL (F_CPU/(BAUD*16)-1)
 
 void uart_init()

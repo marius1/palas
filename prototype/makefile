@@ -6,8 +6,8 @@ SOURCES := $(wildcard *.c) $(wildcard */*.c)
 HEADERS := $(wildcard *.h) $(wildcard */*.h)
 OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
 
-MCU := atmega88p
-MCU_AVRDUDE := m88
+MCU := atmega328 #atmega88p
+MCU_AVRDUDE := m328p #m88
 MCU_FREQ := 8000000UL
 
 CC := avr-gcc
@@ -24,10 +24,10 @@ clean:
 	rm -rf doc/html
 
 flash: $(HEX)
-	avrdude -c usbtiny -p $(MCU_AVRDUDE) -U flash:w:$(HEX)
+	avrdude -c usbtiny -p $(MCU_AVRDUDE) -V -U flash:w:$(HEX)
 
 fuses:
-	 avrdude -c usbtiny -p $(MCU_AVRDUDE) -U lfuse:w:0x8e:m -U hfuse:w:0xde:m
+	avrdude -c usbtiny -p $(MCU_AVRDUDE) -U lfuse:w:0x8e:m -U hfuse:w:0xde:m
 
 $(HEX): $(OUT)
 	$(OBJCOPY) -R .eeprom -O ihex $< $@
