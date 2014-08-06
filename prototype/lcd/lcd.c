@@ -23,7 +23,7 @@ void lcd_init()
 	lcd_write( 0x21, LCD_CMD); // LCD Extended Commands
 	lcd_write( 0xA1, LCD_CMD); // Set LCD Vop (Contrast)
 	lcd_write( 0x04, LCD_CMD); // Set Temp coefficent
-	lcd_write( 0x13, LCD_CMD); // LCD bias mode 1:48: Try 0x13 or 0x14
+	lcd_write( 0x14, LCD_CMD); // LCD bias mode 1:48: Try 0x13 or 0x14
 	lcd_write( 0x20, LCD_CMD); // We must send 0x20 before modifying the display control mode
 	lcd_write( 0x0C, LCD_CMD); // Set display control, normal mode (0x0C). 0x0D for inverse
 	
