@@ -101,26 +101,28 @@ const unsigned char settings[][10] = {
 void print_buttons()
 {
 	uint8_t i, j;
-	
-	for(i = 0; i < 2; i++)
+	if (mode == MODE_RPM)
 	{
-		lcd_goto_xy(74,i * 1);
-		for(j = 0; j < 10; j++)
-			lcd_write(play[i][j], LCD_DATA);
-	}
-	
-	for(i = 0; i < 2; i++)
-	{
-		lcd_goto_xy(73,(i * 1) + 2);
-		for(j = 0; j < 11; j++)
-			lcd_write(reset[i][j], LCD_DATA);
-	}
-	
-	for(i = 0; i < 2; i++)
-	{
-		lcd_goto_xy(74, (i * 1) + 4);
-		for(j = 0; j < 10; j++)
-			lcd_write(settings[i][j], LCD_DATA);
+		for(i = 0; i < 2; i++)
+		{
+			lcd_goto_xy(74,i * 1);
+			for(j = 0; j < 10; j++)
+				lcd_write(play[i][j], LCD_DATA);
+		}
+		
+		for(i = 0; i < 2; i++)
+		{
+			lcd_goto_xy(73,(i * 1) + 2);
+			for(j = 0; j < 11; j++)
+				lcd_write(reset[i][j], LCD_DATA);
+		}
+		
+		for(i = 0; i < 2; i++)
+		{
+			lcd_goto_xy(74, (i * 1) + 4);
+			for(j = 0; j < 10; j++)
+				lcd_write(settings[i][j], LCD_DATA);
+		}
 	}
 }
 
@@ -148,6 +150,7 @@ void print_menu()
 	
 	lcd_goto_xy(0, menu_pos * 1);
 	lcd_write_char('>');
+
 }
 
 ISR(PCINT1_vect)
@@ -184,8 +187,8 @@ ISR(PCINT1_vect)
 	{
 		if (mode == MODE_RPM) 
 		{
-			lcd_clear();
 			mode = MODE_MENU;
+			lcd_clear();			
 		}
 		else
 		{
@@ -197,8 +200,8 @@ ISR(PCINT1_vect)
 				case MENU_CONTRAST:
 					break;
 				case MENU_BACK:
-					lcd_clear();
 					mode = MODE_RPM;
+					lcd_clear();					
 					menu_pos = 0;
 					break;
 				
@@ -254,7 +257,6 @@ void clear_rpm_area()
 void print_rpm()
 {
 	uint16_t rpm = 0;
-	uint8_t offset = 30;
 	uint8_t s;
 	uint8_t t;
 	uint8_t h;
